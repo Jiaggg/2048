@@ -14993,10 +14993,6 @@ var egret;
     })(sys = egret.sys || (egret.sys = {}));
 })(egret || (egret = {}));
 (function (egret) {
-    /**
-     * 心跳计时器单例
-     */
-    egret.$ticker = new egret.sys.SystemTicker();
     var lifecycle;
     (function (lifecycle) {
         /**
@@ -15036,6 +15032,9 @@ var egret;
         }
         lifecycle.addLifecycleListener = addLifecycleListener;
     })(lifecycle = egret.lifecycle || (egret.lifecycle = {}));
+    /**
+     * 心跳计时器单例
+     */
     egret.ticker = new egret.sys.SystemTicker();
 })(egret || (egret = {}));
 if (true) {
@@ -16515,6 +16514,10 @@ var egret;
                         compositeOp_1 = defaultCompositeOp;
                     }
                 }
+                var bounds_1 = displayObject.$getOriginalBounds();
+                if (bounds_1.width <= 0 || bounds_1.height <= 0) {
+                    return drawCalls_1;
+                }
                 if (filters_1.length == 1 && filters_1[0].type == "colorTransform" && !displayObject.$children) {
                     if (hasBlendMode_1) {
                         context.globalCompositeOperation = compositeOp_1;
@@ -16544,7 +16547,6 @@ var egret;
                 // 获取显示对象的矩形区域
                 var region_1;
                 region_1 = egret.sys.Region.create();
-                var bounds_1 = displayObject.$getOriginalBounds();
                 region_1.updateRegion(bounds_1, displayMatrix_1);
                 // 为显示对象创建一个新的buffer
                 // todo 这里应该计算 region.x region.y
@@ -16593,6 +16595,10 @@ var egret;
                     compositeOp = defaultCompositeOp;
                 }
             }
+            var bounds = displayObject.$getOriginalBounds();
+            if (bounds.width <= 0 || bounds.height <= 0) {
+                return drawCalls;
+            }
             // 获取显示对象的链接矩阵
             var displayMatrix = egret.Matrix.create();
             displayMatrix.copyFrom(displayObject.$getConcatenatedMatrix());
@@ -16602,7 +16608,6 @@ var egret;
             // 获取显示对象的矩形区域
             var region;
             region = egret.sys.Region.create();
-            var bounds = displayObject.$getOriginalBounds();
             region.updateRegion(bounds, displayMatrix);
             // 为显示对象创建一个新的buffer
             // todo 这里应该计算 region.x region.y
@@ -16745,6 +16750,9 @@ var egret;
                 region = egret.sys.Region.create();
                 bounds = displayObject.$getOriginalBounds();
                 region.updateRegion(bounds, displayMatrix);
+            }
+            if (region.width <= 0 || region.height <= 0) {
+                return drawCalls;
             }
             var found = false;
             if (!dirtyList) {
@@ -18052,7 +18060,7 @@ var egret;
              * @language zh_CN
              */
             get: function () {
-                return "5.0.7";
+                return "5.0.8";
             },
             enumerable: true,
             configurable: true
@@ -23137,9 +23145,11 @@ var egret;
          * @language zh_CN
          */
         ByteArray.prototype.readUTFBytes = function (length) {
-            if (!this.validate(length))
+            if (!this.validate(length)) {
                 return;
-            var bytes = new Uint8Array(this.buffer, this.bufferOffset + this._position, length);
+            }
+            var data = this.data;
+            var bytes = new Uint8Array(data.buffer, data.byteOffset + this._position, length);
             this.position += length;
             return this.decodeUTF8(bytes);
         };

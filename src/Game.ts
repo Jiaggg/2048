@@ -9,6 +9,7 @@ class Game extends eui.Component {
 	public num: Num = null;
 	public size: number = 4;
 	public num_array: number[] = [];
+	public last_array: number[] = [];
 	//tile之间的缝隙
 	public gap: number = 10;
 	//每个tile的尺寸
@@ -19,6 +20,8 @@ class Game extends eui.Component {
 	public img_success: eui.Image;
 	public btn_restart1: eui.Button;//降低
 	public btn_restart2: eui.Button;//提高
+	// public btn_restart3: eui.Button;//返回
+	
 	public score: number = 0;
 	public best: number = 0;
 	public lb_explain: eui.Label;//说明
@@ -32,9 +35,10 @@ class Game extends eui.Component {
 		super();
 
 		this.skinName = "resource/skins/game.exml";
-		this.btn_restart.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclick_restart, this);
+		this.btn_restart.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclick_restart3, this);
 		this.btn_restart1.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclick_restart1, this);
 		this.btn_restart2.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclick_restart2, this);
+		// this.btn_restart3.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclick_restart3, this);
 		this.btn_more.addEventListener(egret.TouchEvent.TOUCH_TAP, this.more, this);
 		if (egret.MainContext.deviceType != egret.MainContext.DEVICE_MOBILE) {
 			var self = this;
@@ -218,6 +222,28 @@ private updateWhenMouseUp():void
 
 	}
 
+	public onclick_restart3() {
+		for (var i = 0, len = this.last_array.length; i < len; i++) {
+			this.num_array[i] = this.last_array[i];
+		}
+		//移除所有图片
+		for (var i = 0, len = this.num_array.length; i < len; i++) {
+			var num = <Num>this.gp_num.getChildByName(i.toString());
+			if(num != null && num != undefined)
+			{
+				this.gp_num.removeChild(num);
+			}
+		}
+		for (var i = 0, len = this.num_array.length; i < len; i++) {
+			if(this.num_array[i] != 0)
+			{
+				this.create_num(i, this.num_array[i]);
+			}
+		}
+	}
+
+
+
 	//创建背景
 	public game_bg() {
 		this.tile_size = (this.gp_tile.width - (this.size + 1) * this.gap) / this.size;
@@ -291,6 +317,10 @@ private updateWhenMouseUp():void
 		if (this.isover) {
 			return;
 		}
+		for (var i = 0, len = this.num_array.length; i < len; i++) {
+			this.last_array[i] = this.num_array[i];
+		}
+
 		switch (direction) {
 			case "up":
 				//循环

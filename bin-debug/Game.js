@@ -19,17 +19,20 @@ var Game = (function (_super) {
         _this.num = null;
         _this.size = 4;
         _this.num_array = [];
+        _this.last_array = [];
         //tile之间的缝隙
         _this.gap = 10;
         _this.isover = false;
+        // public btn_restart3: eui.Button;//返回
         _this.score = 0;
         _this.best = 0;
         _this.level = 3;
         _this.goal = 2048;
         _this.skinName = "resource/skins/game.exml";
-        _this.btn_restart.addEventListener(egret.TouchEvent.TOUCH_TAP, _this.onclick_restart, _this);
+        _this.btn_restart.addEventListener(egret.TouchEvent.TOUCH_TAP, _this.onclick_restart3, _this);
         _this.btn_restart1.addEventListener(egret.TouchEvent.TOUCH_TAP, _this.onclick_restart1, _this);
         _this.btn_restart2.addEventListener(egret.TouchEvent.TOUCH_TAP, _this.onclick_restart2, _this);
+        // this.btn_restart3.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclick_restart3, this);
         _this.btn_more.addEventListener(egret.TouchEvent.TOUCH_TAP, _this.more, _this);
         if (egret.MainContext.deviceType != egret.MainContext.DEVICE_MOBILE) {
             var self = _this;
@@ -190,6 +193,23 @@ var Game = (function (_super) {
             this.img_win.visible = true;
         }
     };
+    Game.prototype.onclick_restart3 = function () {
+        for (var i = 0, len = this.last_array.length; i < len; i++) {
+            this.num_array[i] = this.last_array[i];
+        }
+        //移除所有图片
+        for (var i = 0, len = this.num_array.length; i < len; i++) {
+            var num = this.gp_num.getChildByName(i.toString());
+            if (num != null && num != undefined) {
+                this.gp_num.removeChild(num);
+            }
+        }
+        for (var i = 0, len = this.num_array.length; i < len; i++) {
+            if (this.num_array[i] != 0) {
+                this.create_num(i, this.num_array[i]);
+            }
+        }
+    };
     //创建背景
     Game.prototype.game_bg = function () {
         this.tile_size = (this.gp_tile.width - (this.size + 1) * this.gap) / this.size;
@@ -253,6 +273,9 @@ var Game = (function (_super) {
     Game.prototype.doMove = function (direction) {
         if (this.isover) {
             return;
+        }
+        for (var i = 0, len = this.num_array.length; i < len; i++) {
+            this.last_array[i] = this.num_array[i];
         }
         switch (direction) {
             case "up":
